@@ -7,5 +7,10 @@ This can then be fired at a WFS (OGC WFS-T) compliant server. Currently tested a
 # Quickstart
 
 Run HXL2WFSPusher with two arguments:
-1. The HXL data container that contains the admin units to be converted.
-2. The address of the transactional WFS to write to.
+
+* The HXL data container that contains the admin units to be converted.
+
+* The address of the transactional WFS to write to.
+
+Currently, the feature properties are tied to a sample WFS setup, which has a certain set of properties set up. These do not make a lot of sense for HXL data, so this is something that needs to be changed once the we have agreed on the properties to have on the WFS end.
+
