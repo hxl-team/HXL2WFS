@@ -19,14 +19,16 @@ public class HXL2WFSPusher {
 			System.out.println("Fetching features from HXL triple store...");
 
 			HXLReader reader = new HXLReader();
+			
 			System.out.println(reader.getSPARQLquery(container));
+			
 			String insertCode = reader.getWFSInsert(container);
 
-			System.out.println(insertCode);
-//			System.out.println("Writing data to WFS...");
-//			
-//			WFSWriter writer = new WFSWriter(wfsaddress);
-//			writer.insert(insertCode);
+			System.out.println(insertCode);			
+			System.out.println("Writing data to WFS...");
+			
+			WFSWriter writer = new WFSWriter(wfsaddress);
+			writer.insert(insertCode);
 			
 			
 //			for (String container : (new UpdateChecker().getUpdatedContainers())) {

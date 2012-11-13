@@ -23,13 +23,14 @@ public class HXLReader {
 				getSPARQLquery(container));
 
 		ResultSet results = e.execSelect();
+		
 
-		String insert = "<?xml version=\"1.0\"?>"
-				+ "<wfs:Transaction version=\"1.0.0\" handle=\"TX01\" service=\"WFS\" xmlns=\"http://www.example.com/myns\" "
-				+ "xmlns:myns=\"http://www.example.com/myns\" xmlns:gml=\"http://www.opengis.net/gml\" "
-				+ "xmlns:ogc=\"http://www.opengis.net/ogc\" xmlns:wfs=\"http://www.opengis.net/wfs\" "
-				+ "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" >"
-				+ "<wfs:Insert handle=\"INSERT01\" >";
+		String insert = "<?xml version=\"1.0\"?> \n"
+				+ "<wfs:Transaction version=\"1.0.0\" handle=\"TX01\" service=\"WFS\" xmlns=\"http://www.example.com/myns\"  \n"
+				+ "xmlns:myns=\"http://www.example.com/myns\" xmlns:gml=\"http://www.opengis.net/gml\"  \n"
+				+ "xmlns:ogc=\"http://www.opengis.net/ogc\" xmlns:wfs=\"http://www.opengis.net/wfs\"  \n"
+				+ "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" > \n"
+				+ "<wfs:Insert handle=\"INSERT01\" > \n";
 
 		while (results.hasNext()) {
 			QuerySolution s = results.nextSolution();
@@ -39,49 +40,66 @@ public class HXLReader {
 			String featureType = s.getLiteral("countryCode")+"Admin_"+adminLevel;
 			
 			insert += "<myns:+featureType+ fid=\"" + results.getRowNumber()
-					+ "\" xmlns:myns=\"http://www.example.com/myns\">"
-					+ "         <myns:Name>"
+					+ "\" xmlns:myns=\"http://www.example.com/myns\"> \n"
+					+ "         <myns:Name> \n"
 					+ s.getLiteral("featureName").getString()
-					+ "         </myns:Name>"
-					+ "         <myns:ReferenceName>"
+					+ "         </myns:Name> \n"
+					+ "         <myns:ReferenceName> \n"
 					+ s.getLiteral("refName").getString()
-					+ "         </myns:ReferenceName>"
-					+ "         <myns:pcode>"
+					+ "         </myns:ReferenceName> \n"
+					+ "         <myns:pcode> \n"
 					+ s.getLiteral("pcode").getString()
-					+ "         </myns:pcode>"					
-					+ "         <myns:SHAPE>";
+					+ "         </myns:pcode> \n"					
+					+ "         <myns:SHAPE> \n";
 
 			insert += wkt2gml(s.getLiteral("wkt").getString());
 
-			insert += "</myns:SHAPE>" + "</myns:Mali_Wetlands>";
+			insert += "</myns:SHAPE>" + "</myns:Mali_Wetlands> \n";
 		}
 
 		e.close();
 
-		insert += "</wfs:Insert>" + "</wfs:Transaction>";
+		insert += "</wfs:Insert>" + "</wfs:Transaction> \n";
 
 		return insert;
 	}
 
 	public String getSPARQLquery(String container) {
-		return "prefix hxl: <http://hxl.humanitarianresponse.info/ns/#> "
-				+ "prefix ogc: <http://www.opengis.net/ont/geosparql#> "
-				+ "	SELECT DISTINCT ?unit ?level ?featureName ?refName ?pcode ?wkt ?countryCode WHERE { "
-				+ "		GRAPH <"
-				+ container
-				+ ">{"
-				+ "			?unit a hxl:AdminUnit ;"
-				+ "            hxl:atLevel ?level ; "
-				+ "            hxl:featureName ?featureName ; "
-				+ "            hxl:featureRefName ?refName ; "
-				+ "            hxl:pcode ?pcode ;            	"
-				+ "            ogc:hasGeometry ?geom . 	"
-				+ "    ?geom ogc:hasSerialization ?wkt .       }   "
-				+ "                                                                                                                                                                                                                                                                                                                                                                                "
-				+ "    ?unit hxl:atLocation+ ?c ." 
-				+ "	   ?c a hxl:Country;"
-				+ "       hxl:pcode ?countryCode . " 
-				+ "}";
+		return "prefix hxl: <http://hxl.humanitarianresponse.info/ns/#> \n "
++"prefix ogc: <http://www.opengis.net/ont/geosparql#> \n "
++"\n "
++"SELECT DISTINCT ?unit ?level ?featureName ?refName ?wkt ?pcode ?countryCode WHERE {  \n "
++"  { GRAPH <"+container+">{\n "
++"    ?unit a hxl:AdminUnit ; \n "
++"            hxl:atLevel ?level ; \n "
++"            hxl:featureName ?featureName ; \n "
++"            hxl:featureRefName ?refName ; \n "
++"            hxl:pcode ?pcode ; \n "
++"            ogc:hasGeometry ?geom . \n "
++"    \n "
++"    ?geom ogc:hasSerialization ?wkt . }                                                                                                                                                                                                                                                                                                                                                                                      \n "
++"    \n "
++"   ?unit hxl:atLocation+ ?c . \n "
++"   ?c a hxl:Country; \n "
++"        hxl:pcode ?countryCode . \n "
++"  \n "
++"  } UNION {\n "
++"  \n "
++"    GRAPH <"+container+">{\n "
++"	?unit a hxl:Country ;  \n "
++"            hxl:atLevel ?level ; \n "
++"            hxl:featureName ?featureName ; \n "
++"            hxl:featureRefName ?refName ;  \n "
++"            hxl:pcode ?pcode ;\n "
++"            hxl:pcode ?countryCode ; \n "
++"            ogc:hasGeometry ?geom . \n "
++"    \n "
++"    ?geom ogc:hasSerialization ?wkt . }\n "
++"\n "
++"  }                                                                                                                                                                                                                                                                                                                                                                                      \n "
++"    \n "
++"}\n ";
+
 	}
 
 	private String wkt2gml(String wkt) {
