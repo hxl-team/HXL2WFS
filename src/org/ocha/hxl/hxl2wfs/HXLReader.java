@@ -8,8 +8,7 @@ import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
 
 public class HXLReader {
-	
-	
+
 	/*
 	 * Returns a WFS Insert XML document
 	 */
@@ -25,53 +24,63 @@ public class HXLReader {
 
 		ResultSet results = e.execSelect();
 
-		String insert = "<?xml version=\"1.0\"?>" +
-				"<wfs:Transaction version=\"1.0.0\" handle=\"TX01\" service=\"WFS\" xmlns=\"http://www.example.com/myns\" " +
-				"xmlns:myns=\"http://www.example.com/myns\" xmlns:gml=\"http://www.opengis.net/gml\" " +
-				"xmlns:ogc=\"http://www.opengis.net/ogc\" xmlns:wfs=\"http://www.opengis.net/wfs\" " +
-				"xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" >" +
-				"<wfs:Insert handle=\"INSERT01\" >";
+		String insert = "<?xml version=\"1.0\"?>"
+				+ "<wfs:Transaction version=\"1.0.0\" handle=\"TX01\" service=\"WFS\" xmlns=\"http://www.example.com/myns\" "
+				+ "xmlns:myns=\"http://www.example.com/myns\" xmlns:gml=\"http://www.opengis.net/gml\" "
+				+ "xmlns:ogc=\"http://www.opengis.net/ogc\" xmlns:wfs=\"http://www.opengis.net/wfs\" "
+				+ "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" >"
+				+ "<wfs:Insert handle=\"INSERT01\" >";
 
 		while (results.hasNext()) {
 			QuerySolution s = results.nextSolution();
+
+			// the feature type depends on the country code and the admin level, eg NERAdmin_0
+			String adminLevel = s.getResource("level").toString().split("/adminlevel")[1];
+			String featureType = s.getLiteral("countryCode")+"Admin_"+adminLevel;
 			
-			// TODO: this part needs to be updated once we have agreed on the fields we want to have:
-			insert += "<myns:Mali_Wetlands fid=\""+results.getRowNumber()+"\" xmlns:myns=\"http://www.example.com/myns\">" +
-					"         <myns:NAME>"+s.getLiteral("refName").getString()+"</myns:NAME>" +
-					"         <myns:ISO>Test</myns:ISO>" +
-					"         <myns:Country>"+s.getLiteral("country").getString()+"</myns:Country>" +
-					"         <myns:F_CODE_DES>"+s.getLiteral("pcode").getString()+"</myns:F_CODE_DES>" +
-					"         <myns:HYC_DESCRI>Some description</myns:HYC_DESCRI>" +
-					"         <myns:SHAPE>";
-			
+			insert += "<myns:+featureType+ fid=\"" + results.getRowNumber()
+					+ "\" xmlns:myns=\"http://www.example.com/myns\">"
+					+ "         <myns:Name>"
+					+ s.getLiteral("featureName").getString()
+					+ "         </myns:Name>"
+					+ "         <myns:ReferenceName>"
+					+ s.getLiteral("refName").getString()
+					+ "         </myns:ReferenceName>"
+					+ "         <myns:pcode>"
+					+ s.getLiteral("pcode").getString()
+					+ "         </myns:pcode>"					
+					+ "         <myns:SHAPE>";
+
 			insert += wkt2gml(s.getLiteral("wkt").getString());
-			
-			insert += "</myns:SHAPE>" +
-					"</myns:Mali_Wetlands>";
+
+			insert += "</myns:SHAPE>" + "</myns:Mali_Wetlands>";
 		}
-		
+
 		e.close();
-		
-		insert += "</wfs:Insert>" +
-				"</wfs:Transaction>";
+
+		insert += "</wfs:Insert>" + "</wfs:Transaction>";
 
 		return insert;
 	}
 
-	private String getSPARQLquery(String container) {
+	public String getSPARQLquery(String container) {
 		return "prefix hxl: <http://hxl.humanitarianresponse.info/ns/#> "
 				+ "prefix ogc: <http://www.opengis.net/ont/geosparql#> "
-				+ "	SELECT DISTINCT ?unit ?level ?refName ?pcode ?wkt ?country WHERE { "
-				+ "		GRAPH <" + container + ">{"
-				+ "			?unit a hxl:AdminUnit ; " 
-				+ "				  hxl:atLevel ?level ; "
-				+ "				  hxl:featureRefName ?refName ; "
-				+ "				  hxl:pcode ?pcode ; "
-				+ "               hxl:atLocation ?c ;"
-				+ "				  ogc:hasGeometry ?geom . "
-				+ "			?geom ogc:hasSerialization ?wkt . " 
-				+ "      }  " 
-				+ "     ?c hxl:featureRefName ?country . " 
+				+ "	SELECT DISTINCT ?unit ?level ?featureName ?refName ?pcode ?wkt ?countryCode WHERE { "
+				+ "		GRAPH <"
+				+ container
+				+ ">{"
+				+ "			?unit a hxl:AdminUnit ;"
+				+ "            hxl:atLevel ?level ; "
+				+ "            hxl:featureName ?featureName ; "
+				+ "            hxl:featureRefName ?refName ; "
+				+ "            hxl:pcode ?pcode ;            	"
+				+ "            ogc:hasGeometry ?geom . 	"
+				+ "    ?geom ogc:hasSerialization ?wkt .       }   "
+				+ "                                                                                                                                                                                                                                                                                                                                                                                "
+				+ "    ?unit hxl:atLocation+ ?c ." 
+				+ "	   ?c a hxl:Country;"
+				+ "       hxl:pcode ?countryCode . " 
 				+ "}";
 	}
 
