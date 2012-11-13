@@ -12,7 +12,7 @@ public class HXLReader {
 	/*
 	 * Returns a WFS Insert XML document
 	 */
-	public String getWFSInsert(String container) {
+	public String getWFSInsert(String container, String wfsns) {
 
 		// query out all things in the container that are admin units,
 		// along with their names, pcodes, geometries
@@ -26,8 +26,8 @@ public class HXLReader {
 		
 
 		String insert = "<?xml version=\"1.0\"?> \n"
-				+ "<wfs:Transaction version=\"1.0.0\" handle=\"TX01\" service=\"WFS\" xmlns=\"http://www.example.com/myns\"  \n"
-				+ "xmlns:myns=\"http://www.example.com/myns\" xmlns:gml=\"http://www.opengis.net/gml\"  \n"
+				+ "<wfs:Transaction version=\"1.0.0\" handle=\"TX01\" service=\"WFS\" xmlns=\"" + wfsns + "\"  \n"
+				+ "xmlns:myns=\"" + wfsns + "\" xmlns:gml=\"http://www.opengis.net/gml\"  \n"
 				+ "xmlns:ogc=\"http://www.opengis.net/ogc\" xmlns:wfs=\"http://www.opengis.net/wfs\"  \n"
 				+ "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" > \n"
 				+ "<wfs:Insert handle=\"INSERT01\" > \n";
@@ -39,8 +39,8 @@ public class HXLReader {
 			String adminLevel = s.getResource("level").toString().split("/adminlevel")[1];
 			String featureType = s.getLiteral("countryCode")+"Admin_"+adminLevel;
 			
-			insert += "<myns:+featureType+ fid=\"" + results.getRowNumber()
-					+ "\" xmlns:myns=\"http://www.example.com/myns\"> \n"
+			insert += "<myns:" + featureType + " fid=\"" + results.getRowNumber()
+					+ "\" xmlns:myns=\"" + wfsns + "\"> \n"
 					+ "         <myns:Name> \n"
 					+ s.getLiteral("featureName").getString()
 					+ "         </myns:Name> \n"
@@ -54,7 +54,7 @@ public class HXLReader {
 
 			insert += wkt2gml(s.getLiteral("wkt").getString());
 
-			insert += "</myns:SHAPE>" + "</myns:Mali_Wetlands> \n";
+			insert += "</myns:SHAPE>" + "</myns:" + featureType + "> \n";
 		}
 
 		e.close();
