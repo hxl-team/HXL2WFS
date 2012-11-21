@@ -25,9 +25,8 @@ public class HXL2WFSPusher {
 				
 				String insertCode = reader.getWFSInsert();
 
-//				System.out.println(insertCode);			
-//				System.out.println("Writing data to WFS...");
-//				
+				System.out.println(insertCode);			
+				
 				WFSWriter writer = new WFSWriter(wfsaddress);
 				writer.insert(insertCode);
 			}

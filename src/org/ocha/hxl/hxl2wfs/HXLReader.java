@@ -13,7 +13,7 @@ public class HXLReader {
 	private String wfsns;
 	private int featureCount = -1;
 	private int currentOffset = 0;
-	private static int limit = 1000;
+	private static int limit = 10;
 	private static String service = "http://hxl.humanitarianresponse.info/sparql";
 
 	public HXLReader(String container, String wfsns) {
