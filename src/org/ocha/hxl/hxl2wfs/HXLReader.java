@@ -75,7 +75,9 @@ public class HXLReader {
 					+ results.getRowNumber() + "\" xmlns:myns=\"" + wfsns
 					+ "\">\n" + "<myns:Name>"
 					+ s.getLiteral("featureName").getString()
-					+ "</myns:Name>\n" + "<myns:ReferenceName>"
+					+ "</myns:Name>\n" + "<myns:Valid_on>"
+					+ s.getLiteral("date").getString()
+					+ "</myns:Valid_on>\n" + "<myns:ReferenceName>"
 					+ s.getLiteral("refName").getString()
 					+ "</myns:ReferenceName>\n" + "<myns:pcode>"
 					+ s.getLiteral("pcode").getString() + "</myns:pcode>\n"
@@ -126,7 +128,7 @@ public class HXLReader {
 		if (count) {
 			query += "SELECT (COUNT(*) as ?features) WHERE {    \n ";
 		} else {
-			query += "SELECT DISTINCT ?unit ?type ?level ?featureName ?refName ?wkt ?pcode ?countryCode WHERE {  \n ";
+			query += "SELECT DISTINCT ?unit ?type ?level ?featureName ?refName ?wkt ?pcode ?countryCode ?date WHERE {  \n ";
 		}
 
 		query += "   \n " + "  GRAPH <" + container + ">{\n " + "     \n "
@@ -142,7 +144,10 @@ public class HXLReader {
 				+ "   ?unit hxl:atLocation* ?c . \n " + "\n "
 				+ "   ?c a hxl:Country ;\n "
 				+ "      hxl:pcode ?countryCode .\n " + "   \n "
-				+ "         \n " + "}";
+				+ " \n "
+				+ "   <" + container + "> hxl:validOn ?date .\n "
+				+ " \n "
+				+ "}";
 		if (!count) {
 			query += " ORDER BY ?unit LIMIT " + limit + " OFFSET "
 					+ currentOffset;
