@@ -16,20 +16,22 @@ public class HXL2WFSPusher {
 			String container = args[0];
 			String wfsaddress = args[1];
 			
-			System.out.println("Fetching features from HXL triple store...");
+			HXLReader reader = new HXLReader(container, wfsaddress);
+			
+			System.out.println(container+" contains "+reader.getFeatureCount()+ " features to insert into " + wfsaddress);
+			
+			while(reader.hasMoreResults()){
+				//System.out.println(reader.getSPARQLquery(false));
+				
+				String insertCode = reader.getWFSInsert();
 
-			HXLReader reader = new HXLReader();
-			
-			System.out.println(reader.getSPARQLquery(container));
-			
-			String insertCode = reader.getWFSInsert(container, wfsaddress);
-
-			System.out.println(insertCode);			
-			System.out.println("Writing data to WFS...");
-			
-			WFSWriter writer = new WFSWriter(wfsaddress);
-			writer.insert(insertCode);
-			
+//				System.out.println(insertCode);			
+//				System.out.println("Writing data to WFS...");
+//				
+				WFSWriter writer = new WFSWriter(wfsaddress);
+				writer.insert(insertCode);
+			}
+						
 			
 //			for (String container : (new UpdateChecker().getUpdatedContainers())) {
 //				System.out.println(container);

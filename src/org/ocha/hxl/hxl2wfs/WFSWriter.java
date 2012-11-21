@@ -53,7 +53,8 @@ public class WFSWriter {
 				int end = serverOutput.indexOf("</wfs:totalInserted>");
 				System.out.println(serverOutput.substring(start, end) + " features added to the WFS.");
 			}else{
-				System.out.println("No features inserted. You have probably seen an error message somewhere above.");
+				System.out.println("No features inserted. Here's what the WFS server returned:");
+				System.out.println(serverOutput);
 			}
 			
 		} catch (Exception e) {
