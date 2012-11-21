@@ -143,7 +143,7 @@ public class HXLReader {
 				+ "     }\n " + "     \n " + "   }\n " + "      \n "
 				+ "   ?unit hxl:atLocation* ?c . \n " + "\n "
 				+ "   ?c a hxl:Country ;\n "
-				+ "      hxl:pcode ?countryCode .\n " + "   \n "
+				+ "      <http://www.fao.org/countryprofiles/geoinfo/geopolitical/resource/codeISO3> ?countryCode .\n " + "   \n "
 				+ " \n "
 				+ "   <" + container + "> hxl:validOn ?date .\n "
 				+ " \n "
