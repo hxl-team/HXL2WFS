@@ -23,7 +23,7 @@ public class HXLReader {
 
 	// checks whether there are more results to come from this data container
 	public boolean hasMoreResults() {
-		return (currentOffset + limit) < getFeatureCount();
+		return currentOffset <= getFeatureCount();
 	}
 
 	/*
