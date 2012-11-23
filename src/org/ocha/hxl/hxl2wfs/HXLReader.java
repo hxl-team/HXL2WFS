@@ -76,7 +76,7 @@ public class HXLReader {
 					+ "\">\n" + "<myns:Name>"
 					+ s.getLiteral("featureName").getString()
 					+ "</myns:Name>\n" + "<myns:Valid_on>"
-					+ s.getLiteral("date").getString()
+					+ this.formatDate(s.getLiteral("date").getString())
 					+ "</myns:Valid_on>\n" + "<myns:ReferenceName>"
 					+ s.getLiteral("refName").getString()
 					+ "</myns:ReferenceName>\n" + "<myns:pcode>"
@@ -91,6 +91,16 @@ public class HXLReader {
 		insert += "</wfs:Transaction>\n";
 
 		return insert;
+	}
+
+	private String formatDate(String date) {
+		if(date.length() == 10){
+			// only the data is given, add timestamp to make ArcGIS Server happy:
+			return date+"T00:00:00.0Z";
+		}else{
+			// we assume all is good:
+			return date;
+		}
 	}
 
 	// returns the number of features in the data container that will be
